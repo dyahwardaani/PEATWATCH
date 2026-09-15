@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import 'tailwindcss';
+
+:root {
+  --brand: #0B3D2E;
+  --brand-mid: #104F3A;
+  --brand-light: #2FA66A;
+  --brand-pale: #DDF3E7;
+  --bg: #F5F8F6;
+  --card: #FFFFFF;
+  --text: #17352C;
+  --text-muted: #6B8178;
+  --border: #D5E5DC;
+  --sidebar-w: 220px;
+  --header-h: 60px;
+  --status-normal: #2FA66A;
+  --status-normal-bg: #DDF3E7;
+  --status-normal-text: #176B4D;
+  --status-waspada: #EAB308;
+  --status-waspada-bg: #FEF3C7;
+  --status-waspada-text: #854D0E;
+  --status-siaga: #F59E0B;
+  --status-siaga-bg: #FFEDD5;
+  --status-siaga-text: #92400E;
+  --status-bahaya: #DC2626;
+  --status-bahaya-bg: #FEE2E2;
+  --status-bahaya-text: #7F1D1D;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.07), 0 0 0 1px rgba(0,0,0,.04);
+  padding: 20px;
+}
+
+.badge-normal  { background: var(--status-normal-bg);  color: var(--status-normal-text);  font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px; }
+.badge-waspada { background: var(--status-waspada-bg); color: var(--status-waspada-text); font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px; }
+.badge-siaga   { background: var(--status-siaga-bg);   color: var(--status-siaga-text);   font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px; }
+.badge-bahaya  { background: var(--status-bahaya-bg);  color: var(--status-bahaya-text);  font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px; }
