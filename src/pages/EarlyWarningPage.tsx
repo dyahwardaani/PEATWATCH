@@ -28,6 +28,7 @@ const riskConfig: Record<RiskLevel, { bg: string; text: string; icon: string; la
 export default function EarlyWarningPage() {
   const [currentStatus] = useState<RiskLevel>('Siaga')
   const rc = riskConfig[currentStatus]
+  const isWarningState = currentStatus !== 'Normal'
 
   return (
     <div>
@@ -38,14 +39,77 @@ export default function EarlyWarningPage() {
 
       {/* Main Status */}
       <div className="card mb-5 overflow-hidden" style={{ background: rc.bg }}>
+        <style>{`
+          @keyframes warningPulse {
+            0% {
+              transform: scale(0.9);
+              opacity: 0.12;
+            }
+            18% {
+              transform: scale(1.02);
+              opacity: 0.24;
+            }
+            38% {
+              transform: scale(1.12);
+              opacity: 0.52;
+            }
+            68% {
+              transform: scale(1.42);
+              opacity: 0;
+            }
+            100% {
+              transform: scale(0.9);
+              opacity: 0;
+            }
+          }
+
+          @keyframes warningRing {
+            0% {
+              transform: scale(0.9);
+              opacity: 0.08;
+            }
+            25% {
+              transform: scale(1.03);
+              opacity: 0.2;
+            }
+            58% {
+              transform: scale(1.18);
+              opacity: 0.4;
+            }
+            100% {
+              transform: scale(1.45);
+              opacity: 0;
+            }
+          }
+
+          .warning-indicator-base {
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.15);
+          }
+
+          .warning-pulse-ring {
+            animation: warningPulse 2.3s ease-in-out infinite;
+            transform-origin: center;
+          }
+
+          .warning-pulse-ring-outer {
+            animation: warningRing 2.3s ease-in-out infinite;
+            transform-origin: center;
+          }
+        `}</style>
         <div className="flex flex-col items-center justify-center text-center">
           <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: rc.text, opacity: .7 }}>
             Status Saat Ini
           </p>
           <div className="flex items-center justify-center gap-3">
-            <div className="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ background: rc.text + '22' }}>
-              <AlertTriangle size={30} style={{ color: rc.text }} />
+            <div className="relative w-14 h-14 flex items-center justify-center flex-shrink-0">
+              {isWarningState && (
+                <>
+                  <div className="warning-pulse-ring-outer absolute inset-[-8px] rounded-full border" style={{ borderColor: rc.text + '66' }} />
+                  <div className="warning-pulse-ring absolute inset-0 rounded-full" style={{ background: rc.text + '22' }} />
+                </>
+              )}
+              <div className="warning-indicator-base absolute inset-0 rounded-full" style={{ background: rc.text + '22' }} />
+              <AlertTriangle size={30} style={{ color: rc.text, position: 'relative', zIndex: 1 }} />
             </div>
             <h2 className="text-4xl font-extrabold tracking-wide" style={{ color: rc.text }}>
               {currentStatus.toUpperCase()}

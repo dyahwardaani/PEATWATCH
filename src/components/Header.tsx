@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Bell, Search, ChevronDown, X, UserRound, Settings, LogOut } from 'lucide-react'
+import { Activity, Bell, Check, ChevronDown, Clock3, MapPin, Search, ShieldAlert, X, UserRound, Settings, LogOut } from 'lucide-react'
 import { recentActivity } from '../data/mockData'
 import type { Page } from '../data/mockData'
 
@@ -10,11 +10,28 @@ interface Props {
 
 const avatarUrl = 'https://cdn.jsdelivr.net/gh/alohe/avatars/png/memo_1.png'
 
+const searchOptions = [
+  { label: 'Lokasi Monitoring', icon: MapPin },
+  { label: 'Status Risiko', icon: ShieldAlert },
+  { label: 'Data Sensor', icon: Activity },
+  { label: 'Riwayat Monitoring', icon: Clock3 },
+] as const
+
 export default function Header({ onNavigate, onLogout }: Props) {
   const [showNotif, setShowNotif] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
   const [showLogout, setShowLogout] = useState(false)
+  const [showSearchMenu, setShowSearchMenu] = useState(false)
+  const [selectedSearchCategory, setSelectedSearchCategory] = useState<string | null>(null)
+  const [searchKeyword, setSearchKeyword] = useState('')
+  const [now, setNow] = useState(new Date())
   const profileRef = useRef<HTMLDivElement>(null)
+  const searchRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 1000)
+    return () => window.clearInterval(timer)
+  }, [])
 
   useEffect(() => {
     if (!showProfile) return
@@ -25,24 +42,172 @@ export default function Header({ onNavigate, onLogout }: Props) {
     return () => document.removeEventListener('mousedown', handleOutsideClick)
   }, [showProfile])
 
+  useEffect(() => {
+    if (!showSearchMenu) return
+    function handleOutsideClick(event: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSearchMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', handleOutsideClick)
+    return () => document.removeEventListener('mousedown', handleOutsideClick)
+  }, [showSearchMenu])
+
+  const formattedDate = new Intl.DateTimeFormat('id-ID', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'Asia/Jakarta',
+  }).format(now)
+
+  const formattedTime = new Intl.DateTimeFormat('id-ID', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: 'Asia/Jakarta',
+  }).format(now)
+
   function openPage(page: Page) {
     setShowProfile(false)
     onNavigate(page)
   }
 
+  function handleSelectSearchCategory(category: string) {
+    setSelectedSearchCategory(category)
+    setShowSearchMenu(false)
+  }
+
+  function handleClearSearch() {
+    setSelectedSearchCategory(null)
+    setSearchKeyword('')
+    setShowSearchMenu(false)
+  }
+
+  function handleSearchSubmit() {
+    if (!selectedSearchCategory && !searchKeyword.trim()) return
+    setShowSearchMenu(false)
+  }
+
   return (
     <header className="flex items-center justify-between px-6 bg-white border-b border-[var(--border)] h-[60px] flex-shrink-0 relative z-20">
+      <style>{`
+        @keyframes searchDropdownFade {
+          from {
+            opacity: 0;
+            transform: translateY(-6px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .search-dropdown {
+          animation: searchDropdownFade 0.18s ease-out;
+        }
+      `}</style>
+
       {/* Search */}
-      <div className="flex items-center gap-2 bg-[var(--bg)] rounded-lg px-3 py-1.5 w-60">
-        <Search size={15} className="text-[var(--text-muted)]" />
-        <input placeholder="Cari sesuatu..." className="bg-transparent text-sm outline-none w-full text-[var(--text)]"
-          style={{ color: 'var(--text)' }} />
+      <div className="relative" ref={searchRef}>
+        <div
+          onClick={() => setShowSearchMenu(v => !v)}
+          className="flex items-center gap-2 bg-[var(--bg)] rounded-lg px-3 py-1.5 w-60 cursor-pointer"
+        >
+          <Search size={15} className="text-[var(--text-muted)]" />
+
+          {selectedSearchCategory && (
+            <span className="inline-flex items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700">
+              {selectedSearchCategory}
+              <button
+                type="button"
+                onClick={event => {
+                  event.stopPropagation()
+                  handleClearSearch()
+                }}
+                className="flex items-center justify-center rounded-full hover:bg-emerald-100"
+                aria-label="Clear search category"
+              >
+                <X size={10} />
+              </button>
+            </span>
+          )}
+
+          <input
+            value={searchKeyword}
+            onChange={event => setSearchKeyword(event.target.value)}
+            onFocus={() => setShowSearchMenu(true)}
+            onKeyDown={event => {
+              if (event.key === 'Enter') handleSearchSubmit()
+            }}
+            placeholder={selectedSearchCategory ? 'Ketik kata kunci...' : 'Cari sesuatu...'}
+            className="bg-transparent text-sm outline-none flex-1 min-w-0 text-[var(--text)]"
+            style={{ color: 'var(--text)' }}
+          />
+
+          {selectedSearchCategory && searchKeyword.trim() && (
+            <button
+              type="button"
+              onClick={event => {
+                event.stopPropagation()
+                handleSearchSubmit()
+              }}
+              className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-600 text-white transition-colors hover:bg-emerald-700"
+              aria-label="Search"
+            >
+              <Search size={12} />
+            </button>
+          )}
+
+          {selectedSearchCategory && !searchKeyword.trim() && (
+            <button
+              type="button"
+              onClick={event => {
+                event.stopPropagation()
+                handleClearSearch()
+              }}
+              className="flex h-6 w-6 items-center justify-center rounded-md text-[var(--text-muted)] hover:bg-white/60"
+              aria-label="Clear search"
+            >
+              <X size={12} />
+            </button>
+          )}
+        </div>
+
+        {showSearchMenu && (
+          <div className="search-dropdown absolute left-0 top-[calc(100%+8px)] z-30 w-64 rounded-xl border border-[var(--border)] bg-white p-2 shadow-xl">
+            {searchOptions.map(option => {
+              const Icon = option.icon
+              const isSelected = selectedSearchCategory === option.label
+
+              return (
+                <button
+                  key={option.label}
+                  type="button"
+                  onClick={() => handleSelectSearchCategory(option.label)}
+                  className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left transition-colors ${
+                    isSelected ? 'bg-emerald-50 text-emerald-800' : 'text-[var(--text)] hover:bg-[var(--bg)]'
+                  }`}
+                >
+                  <span className="flex items-center gap-2.5">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--bg)] text-[var(--text-muted)]">
+                      <Icon size={14} />
+                    </span>
+                    <span className="text-sm font-medium">{option.label}</span>
+                  </span>
+
+                  {isSelected && <Check size={14} className="text-emerald-600" />}
+                </button>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       {/* Right */}
       <div className="flex items-center gap-3">
         <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
-          Rabu, 13 September 2024 &nbsp;|&nbsp; <strong style={{ color: 'var(--text)' }}>14:28 WIB</strong>
+          {formattedDate} &nbsp;|&nbsp; <strong style={{ color: 'var(--text)' }}>{formattedTime} WIB</strong>
         </span>
 
         {/* Notification */}

@@ -1,9 +1,16 @@
 import { useState } from 'react'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, X } from 'lucide-react'
 
 interface Props { onLogin: () => void }
 
 export default function LoginPage({ onLogin }: Props) {
+  const [showWelcome, setShowWelcome] = useState(() => {
+    try {
+      return localStorage.getItem('peatwatch-welcome-seen') !== 'true'
+    } catch {
+      return true
+    }
+  })
   const [showPw, setShowPw] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -14,10 +21,18 @@ export default function LoginPage({ onLogin }: Props) {
     onLogin()
   }
 
+  function dismissWelcome() {
+    try {
+      localStorage.setItem('peatwatch-welcome-seen', 'true')
+    } catch {
+    }
+    setShowWelcome(false)
+  }
+
   return (
     <div className="min-h-screen flex">
       {/* Left: Hero */}
-      <div className="hidden md:flex flex-col justify-between w-1/2 relative overflow-hidden p-10"
+      <div className="hidden md:flex items-center justify-center w-1/2 relative overflow-hidden p-10"
         style={{
           backgroundImage: "url('https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1800&q=85')",
           backgroundPosition: 'center',
@@ -37,8 +52,8 @@ export default function LoginPage({ onLogin }: Props) {
           style={{ background: 'linear-gradient(to top, rgba(2,18,12,.88), rgba(4,30,20,.28) 58%, transparent)' }} />
 
         {/* Brand */}
-        <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-2">
+        <div className="relative z-10 w-full max-w-md text-center">
+          <div className="flex flex-col items-center gap-3 mb-2">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center"
               style={{ background: 'rgba(255,255,255,.15)', backdropFilter: 'blur(8px)' }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -47,18 +62,14 @@ export default function LoginPage({ onLogin }: Props) {
               </svg>
             </div>
             <div>
-              <h1 className="text-white font-bold text-2xl tracking-widest">PEATWATCH</h1>
-              <p className="text-green-300 text-xs tracking-wider">Peatland Early Warning System</p>
+              <h1 className="text-white font-bold text-2xl tracking-widest"><span className="hero-highlight">PEATWATCH</span></h1>
+              <p className="text-green-300 text-xs tracking-wider">Peatland <span className="hero-highlight">Early Warning System</span></p>
             </div>
           </div>
-          <p className="text-green-100 text-sm mt-6 max-w-xs leading-relaxed opacity-80">
+          <p className="text-green-100 text-sm mt-6 mx-auto max-w-xs leading-relaxed opacity-80">
             Bersama menjaga lahan gambut untuk masa depan yang lebih aman.
           </p>
-        </div>
-
-        {/* Quote */}
-        <div className="relative z-10">
-          <div className="border-l-2 border-green-400 pl-4">
+          <div className="mt-8 border-l-2 border-green-400 pl-4 text-left inline-block">
             <p className="text-green-100 text-sm italic leading-relaxed opacity-90">
               "Lahan gambut yang terjaga,<br />kehidupan yang berlanjut."
             </p>
@@ -127,12 +138,34 @@ export default function LoginPage({ onLogin }: Props) {
               <button type="button" onClick={onLogin}
                 className="w-full py-2.5 rounded-lg text-sm font-medium border border-[var(--border)] hover:bg-[var(--bg)] transition-colors"
                 style={{ color: 'var(--brand)' }}>
-                Lihat demo tanpa login →
+                Masuk dengan mode tamu
               </button>
             </form>
           </div>
         </div>
       </div>
+
+      {showWelcome && (
+        <div className="welcome-backdrop" role="presentation">
+          <section className="welcome-modal" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+            <button type="button" className="welcome-close" onClick={dismissWelcome} aria-label="Tutup dialog">
+              <X size={18} />
+            </button>
+            <div className="welcome-icon" aria-hidden="true">
+              <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" />
+                <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
+              </svg>
+            </div>
+            <p className="welcome-kicker">Peatland <span className="welcome-highlight">Early Warning System</span></p>
+            <h2 id="welcome-title">Selamat Datang di <span className="welcome-highlight">PeatWatch</span></h2>
+            <p className="welcome-copy">Pantau kondisi lahan gambut dan dapatkan peringatan dini secara mudah.</p>
+            <button type="button" className="welcome-primary" onClick={dismissWelcome}>
+              Masuk ke PeatWatch
+            </button>
+          </section>
+        </div>
+      )}
     </div>
   )
 }
