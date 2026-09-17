@@ -69,11 +69,6 @@ export default function LoginPage({ onLogin }: Props) {
           <p className="text-green-100 text-sm mt-6 mx-auto max-w-xs leading-relaxed opacity-80">
             Bersama menjaga lahan gambut untuk masa depan yang lebih aman.
           </p>
-          <div className="mt-8 border-l-2 border-green-400 pl-4 text-left inline-block">
-            <p className="text-green-100 text-sm italic leading-relaxed opacity-90">
-              "Lahan gambut yang terjaga,<br />kehidupan yang berlanjut."
-            </p>
-          </div>
         </div>
       </div>
 
