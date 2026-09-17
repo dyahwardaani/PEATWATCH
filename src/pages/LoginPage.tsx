@@ -4,6 +4,7 @@ import { Eye, EyeOff, X } from 'lucide-react'
 interface Props { onLogin: () => void }
 
 export default function LoginPage({ onLogin }: Props) {
+  const [mode, setMode] = useState<'login' | 'register'>('login')
   const [showWelcome, setShowWelcome] = useState(() => {
     try {
       return localStorage.getItem('peatwatch-welcome-seen') !== 'true'
@@ -12,13 +13,37 @@ export default function LoginPage({ onLogin }: Props) {
     }
   })
   const [showPw, setShowPw] = useState(false)
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [remember, setRemember] = useState(false)
+  const [registerError, setRegisterError] = useState('')
+  const [registerSuccess, setRegisterSuccess] = useState('')
 
   function handleLogin(e: React.FormEvent) {
     e.preventDefault()
     onLogin()
+  }
+
+  function handleRegister(e: React.FormEvent) {
+    e.preventDefault()
+    if (password !== confirmPassword) {
+      setRegisterError('Konfirmasi password tidak cocok.')
+      return
+    }
+
+    setRegisterError('')
+    setRegisterSuccess('Akun berhasil didaftarkan. Silakan masuk.')
+    setMode('login')
+    setPassword('')
+    setConfirmPassword('')
+  }
+
+  function switchMode(nextMode: 'login' | 'register') {
+    setMode(nextMode)
+    setRegisterError('')
+    setRegisterSuccess('')
   }
 
   function dismissWelcome() {
@@ -87,16 +112,35 @@ export default function LoginPage({ onLogin }: Props) {
           </div>
 
           <div className="card">
-            <h2 className="text-xl font-bold mb-1">Selamat Datang</h2>
+            <h2 className="text-xl font-bold mb-1">{mode === 'login' ? 'Selamat Datang' : 'Buat Akun'}</h2>
             <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>
-              Masuk untuk mengakses sistem monitoring dan peringatan dini karhutla.
+              {mode === 'login'
+                ? 'Masuk untuk mengakses sistem monitoring dan peringatan dini karhutla.'
+                : 'Daftar untuk mulai menggunakan sistem monitoring dan peringatan dini karhutla.'}
             </p>
 
-            <form onSubmit={handleLogin} className="space-y-4">
+            {registerSuccess && mode === 'login' && (
+              <p className="mb-4 rounded-lg bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700" role="status">
+                {registerSuccess}
+              </p>
+            )}
+
+            <form onSubmit={mode === 'login' ? handleLogin : handleRegister} className="space-y-4">
+              {mode === 'register' && (
+                <div>
+                  <label className="text-xs font-semibold block mb-1.5">Nama Lengkap</label>
+                  <input type="text" value={name} onChange={e => setName(e.target.value)}
+                    placeholder="masukkan nama lengkap"
+                    required
+                    className="w-full border border-[var(--border)] rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 transition-all"
+                    style={{ '--tw-ring-color': 'var(--brand-light)' } as React.CSSProperties} />
+                </div>
+              )}
               <div>
                 <label className="text-xs font-semibold block mb-1.5">Email</label>
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)}
                   placeholder="masukkan email anda"
+                  required
                   className="w-full border border-[var(--border)] rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 transition-all"
                   style={{ '--tw-ring-color': 'var(--brand-light)' } as React.CSSProperties} />
               </div>
@@ -106,6 +150,7 @@ export default function LoginPage({ onLogin }: Props) {
                   <input type={showPw ? 'text' : 'password'} value={password}
                     onChange={e => setPassword(e.target.value)}
                     placeholder="masukkan password"
+                    required
                     className="w-full border border-[var(--border)] rounded-lg px-3 py-2.5 text-sm outline-none pr-10" />
                   <button type="button" onClick={() => setShowPw(v => !v)}
                     className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -115,26 +160,51 @@ export default function LoginPage({ onLogin }: Props) {
                 </div>
               </div>
 
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)}
-                  className="rounded" style={{ accentColor: 'var(--brand)' }} />
-                <span className="text-xs">Ingat saya</span>
-              </label>
+              {mode === 'register' && (
+                <div>
+                  <label className="text-xs font-semibold block mb-1.5">Konfirmasi Password</label>
+                  <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)}
+                    placeholder="ulangi password"
+                    required
+                    className="w-full border border-[var(--border)] rounded-lg px-3 py-2.5 text-sm outline-none" />
+                  {registerError && <p className="mt-1.5 text-xs text-red-600" role="alert">{registerError}</p>}
+                </div>
+              )}
+
+              {mode === 'login' && (
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)}
+                    className="rounded" style={{ accentColor: 'var(--brand)' }} />
+                  <span className="text-xs">Ingat saya</span>
+                </label>
+              )}
 
               <button type="submit"
                 className="w-full py-2.5 rounded-lg text-white font-semibold text-sm transition-all active:scale-[.98]"
                 style={{ background: 'var(--brand)' }}>
-                Masuk
+                {mode === 'login' ? 'Masuk' : 'Daftar'}
               </button>
 
-              <div className="text-center">
-                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>atau</span>
-              </div>
-              <button type="button" onClick={onLogin}
-                className="w-full py-2.5 rounded-lg text-sm font-medium border border-[var(--border)] hover:bg-[var(--bg)] transition-colors"
-                style={{ color: 'var(--brand)' }}>
-                Masuk dengan mode tamu
-              </button>
+              {mode === 'login' && (
+                <>
+                  <div className="text-center">
+                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>atau</span>
+                  </div>
+                  <button type="button" onClick={onLogin}
+                    className="w-full py-2.5 rounded-lg text-sm font-medium border border-[var(--border)] hover:bg-[var(--bg)] transition-colors"
+                    style={{ color: 'var(--brand)' }}>
+                    Masuk dengan mode tamu
+                  </button>
+                </>
+              )}
+
+              <p className="text-center text-xs" style={{ color: 'var(--text-muted)' }}>
+                {mode === 'login' ? 'Belum punya akun?' : 'Sudah punya akun?'}{' '}
+                <button type="button" onClick={() => switchMode(mode === 'login' ? 'register' : 'login')}
+                  className="font-semibold hover:underline" style={{ color: 'var(--brand)' }}>
+                  {mode === 'login' ? 'Daftar' : 'Masuk'}
+                </button>
+              </p>
             </form>
           </div>
         </div>

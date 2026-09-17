@@ -15,11 +15,12 @@ const navItems: { id: Page; label: string; icon: React.ElementType }[] = [
 interface Props {
   activePage: Page
   onNavigate: (p: Page) => void
+  onLogout: () => void
 }
 
-export default function Sidebar({ activePage, onNavigate }: Props) {
+export default function Sidebar({ activePage, onNavigate, onLogout }: Props) {
   return (
-    <aside className="flex flex-col h-screen overflow-y-auto"
+    <aside className="app-sidebar flex flex-col h-screen overflow-y-auto"
       style={{
         width: 'var(--sidebar-w)',
         minWidth: 'var(--sidebar-w)',
@@ -27,7 +28,7 @@ export default function Sidebar({ activePage, onNavigate }: Props) {
         borderRight: '1px solid rgba(255,255,255,.08)',
       }}>
       {/* Logo */}
-      <div className="px-5 py-4 border-b border-white/10">
+      <div className="sidebar-logo px-5 py-4 border-b border-white/10">
         <div className="flex items-center gap-2 mb-0.5">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
             style={{ background: 'rgba(255,255,255,.12)' }}>
@@ -39,7 +40,7 @@ export default function Sidebar({ activePage, onNavigate }: Props) {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 py-3 px-3 space-y-0.5">
+      <nav className="sidebar-nav flex-1 py-3 px-3 space-y-0.5">
         {navItems.map(({ id, label, icon: Icon }) => {
           const active = activePage === id
           return (
@@ -57,8 +58,8 @@ export default function Sidebar({ activePage, onNavigate }: Props) {
       </nav>
 
       {/* Bottom */}
-      <div className="px-3 pb-4 border-t border-white/10 pt-3">
-        <button className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-left hover:bg-white/10"
+      <div className="sidebar-bottom px-3 pb-4 border-t border-white/10 pt-3">
+        <button onClick={onLogout} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-left hover:bg-white/10"
           style={{ color: '#D6E7DF' }}>
           <LogOut size={16} />
           Logout

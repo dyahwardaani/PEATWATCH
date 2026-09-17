@@ -19,7 +19,7 @@ export default function HistoryDataPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
         <div>
           <h1 className="text-xl font-bold">Histori Data</h1>
           <p className="text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>Data hasil pemantauan sensor</p>

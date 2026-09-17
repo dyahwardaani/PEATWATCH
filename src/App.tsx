@@ -22,11 +22,11 @@ export default function App() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: 'var(--bg)' }}>
-      <Sidebar activePage={page} onNavigate={setPage} />
+    <div className="app-shell flex h-screen overflow-hidden" style={{ background: 'var(--bg)' }}>
+      <Sidebar activePage={page} onNavigate={setPage} onLogout={() => setPage('login')} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header onNavigate={setPage} onLogout={() => setPage('login')} />
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="app-main flex-1 overflow-y-auto p-4 md:p-6">
           {page === 'dashboard'      && <DashboardPage onNavigate={setPage} />}
           {page === 'monitoring'     && <MonitoringPage />}
           {page === 'early-warning'  && <EarlyWarningPage />}

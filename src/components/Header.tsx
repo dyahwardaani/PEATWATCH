@@ -90,7 +90,7 @@ export default function Header({ onNavigate, onLogout }: Props) {
   }
 
   return (
-    <header className="flex items-center justify-between px-6 bg-white border-b border-[var(--border)] h-[60px] flex-shrink-0 relative z-20">
+    <header className="app-header flex items-center justify-between gap-2 px-3 sm:px-6 bg-white border-b border-[var(--border)] h-[60px] flex-shrink-0 relative z-20">
       <style>{`
         @keyframes searchDropdownFade {
           from {
@@ -112,7 +112,7 @@ export default function Header({ onNavigate, onLogout }: Props) {
       <div className="relative" ref={searchRef}>
         <div
           onClick={() => setShowSearchMenu(v => !v)}
-          className="flex items-center gap-2 bg-[var(--bg)] rounded-lg px-3 py-1.5 w-60 cursor-pointer"
+          className="flex items-center gap-2 bg-[var(--bg)] rounded-lg px-3 py-1.5 w-60 max-w-[48vw] cursor-pointer"
         >
           <Search size={15} className="text-[var(--text-muted)]" />
 
@@ -206,7 +206,7 @@ export default function Header({ onNavigate, onLogout }: Props) {
 
       {/* Right */}
       <div className="flex items-center gap-3">
-        <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
+        <span className="hidden md:inline text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
           {formattedDate} &nbsp;|&nbsp; <strong style={{ color: 'var(--text)' }}>{formattedTime} WIB</strong>
         </span>
 
@@ -246,7 +246,7 @@ export default function Header({ onNavigate, onLogout }: Props) {
             className="w-10 h-10 rounded-full object-cover"
             style={{ background: '#DDF3E7' }}
             />
-            <span className="text-sm font-medium">Admin</span>
+            <span className="hidden sm:inline text-sm font-medium">Admin</span>
             <ChevronDown size={13} style={{ color: 'var(--text-muted)' }} />
           </button>
 

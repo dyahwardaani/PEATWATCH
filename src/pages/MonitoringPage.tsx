@@ -35,7 +35,7 @@ export default function MonitoringPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
         <div>
           <h1 className="text-xl font-bold">Monitoring</h1>
           <p className="text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>Data sensor real-time dan grafik pemantauan</p>
